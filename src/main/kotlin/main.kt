@@ -1,58 +1,63 @@
 class ParkingLot() {
-    lateinit var spots: MutableList<String?>
+    lateinit var parkSpace: MutableList<String?>
 
-    fun isSpotsInitialized() = ::spots.isInitialized
+    fun isSpaceInitialized() = ::parkSpace.isInitialized
 
-    fun createSpots(size: Int): MutableList<String?> {
-        println("Created a parking lot with $size spots.")
-        return Array<String?>(size) { null }.toMutableList().also { spots = it }
+    fun createSpace(size: Int) {
+        if (size > 0) {
+            println("Created a parking lot with $size spots.")
+            Array<String?>(size) { null }.toMutableList().also { parkSpace = it }
+        } else {
+            println("$size is not a valid number..")
+        }
+    }
+
+    fun park(plateNumber: String, color: String) {
+        for (i in 0..parkSpace.lastIndex) {
+            if (parkSpace[i].isNullOrEmpty()) {
+                println("$color car parked in spot ${i+1}.")
+                parkSpace[i] = "$plateNumber $color"
+                return
+            }
+        }
+        println("Sorry, the parking lot is full.")
+    }
+
+    fun status() {
+        if (parkSpace.filterNotNull().count() > 0) {
+            parkSpace.forEachIndexed { index, element ->
+                if (element != null) println("${index+1} $element")
+            }
+        } else {
+            println("Parking lot is empty.")
+        }
+    }
+
+    fun leave(spotNum: Int) {
+        if (spotNum-1 in parkSpace.indices && parkSpace[spotNum - 1] != null) {
+            println("Spot $spotNum is free.")
+            parkSpace[spotNum - 1] = null
+        } else {
+            println("Space $spotNum does not exist.")
+        }
     }
 
 }
 
 fun main() {
-    var parking = ParkingLot()
-    var spaces: MutableList<String?> = arrayListOf()
+    val parking = ParkingLot()
 
-    first@ do {
-        val input = readLine()!!.split(" ")
+    while(true) {
+        val command = readLine()!!.split(" ")
 
-        if(parking.isSpotsInitialized() || input[0] == "create" || input[0] == "exit") {
-            when (input[0]) {
-                "create" -> {
-                    if (input[1] > "0") {
-                        parking = ParkingLot()
-                        spaces = parking.createSpots(input[1].toInt())
-                    }
-
-                } "park" -> {
-                for (i in 0..spaces.lastIndex) {
-                    if (spaces[i].isNullOrEmpty()) {
-                        println("${input[2]} car parked in spot ${i+1}.")
-                        spaces[i] = "${input[1]} ${input[2]}"
-                        continue@first
-                    }
-                }
-                println("Sorry, the parking lot is full.")
-                continue@first
-
-            } "status" -> {
-                if (spaces.filterNotNull().count() > 0) {
-                    spaces.forEachIndexed { index, element ->
-                        if (element != null) println("${index+1} $element")
-                    }
-                } else {
-                    println("Parking lot is empty.")
-                }
-
-            } "leave" -> {
-                println("Spot ${input[1]} is free.")
-                spaces[input[1].toInt()-1] = null
-
-            } "exit" -> {
-                break@first
+        if(parking.isSpaceInitialized() || command[0] == "create" || command[0] == "exit")
+            when (command[0]) {
+                "create" -> parking.createSpace(command[1].toInt())
+                "park" -> parking.park(command[1], command[2])
+                "status" -> parking.status()
+                "leave" -> parking.leave(command[1].toInt())
+                "exit" -> return
             }
-            }
-        } else println("Sorry, a parking lot has not been created.")
-    } while (input[0] != "exit")
+        else println("Sorry, a parking lot has not been created.")
+    }
 }
