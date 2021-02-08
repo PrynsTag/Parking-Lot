@@ -1,8 +1,6 @@
-class ParkingLot() {
-    lateinit var parkSpace: MutableList<String?>
-
+class ParkingLot {
+    private lateinit var parkSpace: MutableList<String?>
     fun isSpaceInitialized() = ::parkSpace.isInitialized
-
     fun createSpace(size: Int) {
         if (size > 0) {
             println("Created a parking lot with $size spots.")
@@ -41,7 +39,6 @@ class ParkingLot() {
             println("Space $spotNum does not exist.")
         }
     }
-
 }
 
 fun main() {
